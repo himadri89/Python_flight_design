@@ -1,5 +1,5 @@
 from pprint import pprint as pp
-from Aircraft import *
+import string
 
 class Flight:
     
@@ -85,37 +85,76 @@ class Flight:
     def num_seats_available(self):
         return sum(sum(1 for i in row.values() if i is None) for row in self._seating 
                    if row is not None)
-     
-    def make_boarding_card(self, card_printer):
-        for passenger,seat in sorted(self._passenger_seats()):
-            card_printer(passenger, seat, self._number(), self.aircraft_model())
-            
+    
+    def make_boarding_pass(self, card_printer):
+        for passenger, seat in sorted(self._passenger_seats()):
+            card_printer(passenger, self.number(), seat, self.aircraft_model())
+    
     def _passenger_seats(self):
-        row_num, seat_letters = self._aircraft.seating_plan()
+        row_num, seat_letter = self._aircraft.seating_plan()
         for row in row_num:
-            for letter in seat_letters:
-                passenger = self._seating[row][letter]
+            for letters in seat_letter:
+                passenger = self._seating[row][letters]
                 if passenger is not None:
-                    yield (passenger, "{}{}".format(row,letter))
-                    
+                    yield (passenger, "{}{}".format(row,letters))
+     
+             
+
+class Aircraft:
+    
+    def num_seats(self):
+        rows, row_seats = self.seating_plan()
+        return len(rows) * len(row_seats)
+
+class Airbus320(Aircraft):
+    
+    def __init__(self, registration):
+        self._registration = registration
+    
+    def registration(self):
+        return self._registration
+    
+    def model(self):
+        return "Airbus A320"
+    
+    def seating_plan(self):
+        return range(1,23), string.ascii_uppercase[:6]
+    
 
 
-
-
-
-Flight1 = Flight("BA445", Aircraft("BBAZ990", "Airbus Alta", 10, 3))
+class Boeing777(Aircraft):
+    
+    def __init__(self, registration):
+        self._registration = registration
+        
+    def registration(self):
+        return self._registration
+    
+    def model(self):
+        return "Boeing 777"
+    
+    def seating_plan(self):
+        return range(1,51), string.ascii_uppercase[:10]
+    
+    
+    
+Flight1 = Flight("AF778", Aircraft("AF-ETA", "Airbus France", 10, 4))
 
 pp(Flight1._seating)
 Flight1.allocate_seat('3A', 'Patricia')
 Flight1.allocate_seat('3B', 'Himadri')
 Flight1.allocate_seat('3C', 'Iana')
-Flight1.allocate_seat('3B', 'Caitlyn')
-Flight1.relocate_passenger('4A', '3A')
+Flight1.relocate_passenger('3A', '3D')
 Flight1.num_seats_available()
-Flight1.make_boarding_card(Aircraft.console_card_printer)
+Flight1.make_boarding_pass(Aircraft.boarding_pass_printer)
 
 
+g = Flight("AF23", Airbus320("BG-333"))
+g.allocate_seat('1A', 'Lucio')
+pp(g._seating)
 
+Airbus320("AB-333").num_seats()
+Boeing777("BG-333").num_seats()
 
 
 

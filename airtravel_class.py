@@ -112,7 +112,7 @@ Flight1.allocate_seat('3C', 'Iana')
 Flight1.allocate_seat('3B', 'Caitlyn')
 Flight1.relocate_passenger('4A', '3A')
 Flight1.num_seats_available()
-Flight1.make_boarding_card(console_card_printer)
+Flight1.make_boarding_card(Aircraft.console_card_printer)
 
 
 
